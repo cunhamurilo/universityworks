@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+//variaveis verica se o automato acabou e o vetor que contém a entrada
+static int acabou = 1;
+static char ent[512];
+
+void maquina(char c,int v) {
+
+	// mantém o estado atual do autômato
+	static char state = 1;
+	static int pos = 0;
+	static int total;
+	total = v;
+
+	//verifica em qual estado esta
+	switch (state) {
+		case 0:		// estado  0 é o estado em que rejeita a entrada
+			printa(v,pos,0);
+			printf("qrejeita");
+			acabou = 0;
+			break;
+
+		case 1:		// estado 1 verifica a primeira posição e inicio da maquina
+			//printf("case 1 = %c  ent[%d]= %c\n",c,pos,ent[pos]);
+			printa(v,pos,0);
+			if (ent[pos] == '0') {
+				ent[pos++] = 'u';
+				state = 2;
+			}
+			else state = 0;
+						printf("\n");
+			break;
+
+		case 2:		// estado 2 verifica se é 0 ou x(já passou uma vez) ou se acabou o automato
+			//printf("case 2 = %c  ent[%d]= %c\n",c,pos,ent[pos]);
+			if (ent[pos]  == '0') {
+				printa(v,pos,0);
+				ent[pos++] = 'x';
+				state = 3;
+			}else if ( ent[pos]  == 'x' ){
+				printa(v,1,0);
+				pos++;
+				state = 2;
+			}else {
+				ent[pos] = 'u';
+				printa(v,pos,2);
+				pos++;
+				state = 6;
+				}
+						printf("\n");
+			break;
+
+		case 3:	// estado 3 verifica se é 0 ou x(já passou uma vez) ou final do automato
+			//printf("case 3 = %c  ent[%d]= %c\n",c,pos,ent[pos]);
+			if ( ent[pos]  == '0' ) {
+				printa(v,pos,0);
+				ent[pos++] = '0';
+				state = 4;
+			}else if ( ent[pos]  == 'x' ) {
+				printa(v,pos,3);
+				ent[pos++] = 'x';
+				state = 3;
+			}else{
+				ent[pos] = 'u';
+				printa(v,pos,3);
+				pos++;
+				state = 5;
+			}
+				printf("\n");
+			break;
+
+		case 4:	// estado 4 verifica se é 0 ou x(já passou uma vez) ou final do automato
+			//printf("case 4\n");
+			if ( ent[pos]  == '0' ) {
+				printa(v,pos,0);
+				ent[pos++] = 'x';
+				state = 3;
+			}else if ( ent[pos]  == 'x' ) {
+				printa(v,pos,0);
+				ent[pos++] = 'x';
+				state = 4;
+			}else {
+				ent[pos] = 'u';
+				printa(v,pos,0);
+				pos++;
+				state = 0;
+			}
+				printf("\n");
+			break;
+
+		case 5:		// estado 5 retorna a maquina para a primeira posicao
+			//printf("case 5\n");
+			if ( pos == 0) {
+				state = 2;
+				pos++;
+			}else {
+				state = 7;
+				//gets();
+			}
+			break;
+
+		case 6:		// estado 6, estado de aceitacao da maquina
+			for(int i = 0; i < v+1; i++)
+					printf("%c",ent[i]);
+			printf("qaceita");
+			acabou = 0;
+			state = 10;
+			break;
+		case 7:		// estado 7 retorna a maquina para a primeira posicao printando na tela qual a posicao
+			pos--;
+			for(int j = 0; j <= total ; j++){
+				if(j != (pos)){
+					printf("%c",ent[j]);
+				}else{
+					printf("q5");
+					printf("%c",ent[j]);
+				}
+			}
+				printf("\n");
+			state = 5;
+			break;
+	}
+	
+}
+
+//funcao que printa a posicao atual da maquina
+int printa(int cont, int st, int volta){
+	for(int i = 0; i <= cont; i++){
+		if(i != (st)){
+			printf("%c",ent[i]);
+		}else{
+			if(volta == 3) 
+				printf("q3");
+			else if(volta == 2)
+				printf("q2");
+			else
+				printf("q%d",i+1);
+			printf("%c",ent[i]);
+		}
+	}
+}
+
+
+
+int main()
+{
+    int c;
+	
+	//le a entrada
+	printf("Digite o numero para a maquina: ");
+	gets(ent);    
+	//pega tamanho da entrada
+	c = strlen(ent);
+  //printf("Tamanho: %d\n",c);
+
+	//executa até a maquina ser aceita ou rejeitada
+	do{
+		maquina(ent[0],c);
+	}while(acabou !=0);
+
+	printf("\n");
+
+    return 0;
+}
