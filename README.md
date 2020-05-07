@@ -1,2 +1,2 @@
-# worksuniversity
-Contém trabalhos realizados durante o periodo da graduação
+# universityworks
+Contém trabalhos realizados durante o periodo da graduação e pós graduação
